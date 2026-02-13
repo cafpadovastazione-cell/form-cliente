@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrazione Dati - CAF</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #059669, #10b981);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        
+        /* Step Content */
+        .step-container {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+        .step {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            animation: fadeIn 0.4s ease;
+        }
+        .step.active {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .step-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .step-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .step-subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 15px 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        .form-input.large {
+            font-size: 1.3rem;
+            padding: 18px 20px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        /* Buttons */
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: auto;
+            padding-top: 20px;
+        }
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-back {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        .btn-back:hover {
+            background: #e2e8f0;
+        }
+        .btn-next {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+        }
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+        .btn-next:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            width: 100%;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(5, 150, 105, 0.3);
+        }
+        
+        /* File Upload */
+        .file-upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8fafc;
+        }
+        .file-upload-area:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        .upload-text {
+            font-weight: 600;
+            color: #374151;
+        }
+        .upload-hint {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+        .file-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        .file-preview-item {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+        }
+        .file-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .file-preview-item .file-icon {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            font-size: 1.8rem;
+        }
+        .file-preview-item .remove-file {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            background: #dc2626;
+            color: white;
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Success */
+        .success-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 30px;
+            text-align: center;
+        }
+        .success-container.show {
+            display: flex;
+        }
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: bounce 0.6s ease;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        .success-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #059669;
+            margin-bottom: 10px;
+        }
+        .success-text {
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+        .whatsapp-btn {
+            padding: 15px 30px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .whatsapp-btn:hover {
+            background: #128C7E;
+        }
+        .link-btn {
+            padding: 12px 25px;
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        /* Skip button */
+        .skip-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .skip-link a {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+        .skip-link a:hover {
+            color: #64748b;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Registrazione Dati</h1>
+            <p>Compila i tuoi dati personali</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text" id="progressText">Passo 1 di 9</div>
+        </div>
+        
+        <div class="step-container" id="stepContainer">
+            
+            <!-- STEP 1: Nome e Cognome -->
+            <div class="step active" data-step="1">
+                <div class="step-icon">👤</div>
+                <div class="step-title">Come ti chiami?</div>
+                <div class="step-subtitle">Inserisci il tuo nome e cognome</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Cognome *</label>
+                    <input type="text" id="cognome" class="form-input large" placeholder="Es: ROSSI" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nome *</label>
+                    <input type="text" id="nome" class="form-input large" placeholder="Es: MARIO" required>
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-next" onclick="nextStep()">Avanti →</button>
+                </div>
+            </div>
+            
+            <!-- STEP 2: Data e Luogo Nascita -->
+            <div class="step" data-step="2">
+                <div class="step-icon">🎂</div>
+                <div class="step-title">Quando e dove sei nato?</div>
+                <div class="step-subtitle">Dati di nascita</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Data di Nascita *</label>
+                    <input type="date" id="dataNascita" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Città di Nascita *</label>
+                    <input type="text" id="luogoNascita" class="form-input" placeholder="Es: Lagos, Roma..." required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Paese di Nascita *</label>
+                    <input type="text" id="paeseNascita" class="form-input" placeholder="Es: Nigeria, Italia..." required>
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-back" onclick="prevStep()">← Indietro</button>
+                    <button class="btn btn-next" onclick="nextStep()">Avanti →</button>
+                </div>
+            </div>
+            
+            <!-- STEP 3: Cittadinanza e CF -->
+            <div class="step" data-step="3">
+                <div class="step-icon">🌍</div>
+                <div class="step-title">Cittadinanza</div>
+                <div class="step-subtitle">Nazionalità e codice fiscale</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Cittadinanza *</label>
+                    <input type="text" id="cittadinanza" class="form-input" placeholder="Es: Nigeriana, Italiana..." required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Codice Fiscale (se hai)</label>
+                    <input type="text" id="codiceFiscale" class="form-input" maxlength="16" placeholder="Opzionale" style="text-transform: uppercase;">
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-back" onclick="prevStep()">← Indietro</button>
+                    <button class="btn btn-next" onclick="nextStep()">Avanti →</button>
+                </div>
+            </div>
+            
+            <!-- STEP 4: Contatti -->
+            <div class="step" data-step="4">
+                <div class="step-icon">📞</div>
+                <div class="step-title">Come ti contattiamo?</div>
+                <div class="step-subtitle">Telefono e email</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Numero di Telefono *</label>
+                    <input type="tel" id="telefono" class="form-input" placeholder="+39 xxx xxx xxxx" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email (opzionale)</label>
+                    <input type="email" id="email" class="form-input" placeholder="email@esempio.com">
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-back" onclick="prevStep()">← Indietro</button>
+                    <button class="btn btn-next" onclick="nextStep()">Avanti →</button>
+                </div>
+            </div>
+            
+            <!-- STEP 5: Indirizzo -->
+            <div class="step" data-step="5">
+                <div class="step-icon">🏠</div>
+                <div class="step-title">Dove abiti in Italia?</div>
+                <div class="step-subtitle">Il tuo indirizzo attuale</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Indirizzo (Via e numero)</label>
+                    <input type="text" id="indirizzo" class="form-input" placeholder="Es: Via Roma, 15">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Città</label>
+                    <input type="text" id="citta" class="form-input" placeholder="Es: Padova">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Provincia</label>
+                    <select id="provincia" class="form-select">
+                        <option value="">-- Seleziona --</option>
+                        <option value="AG">Agrigento</option><option value="AL">Alessandria</option><option value="AN">Ancona</option><option value="AO">Aosta</option><option value="AR">Arezzo</option><option value="AP">Ascoli Piceno</option><option value="AT">Asti</option><option value="AV">Avellino</option><option value="BA">Bari</option><option value="BT">Barletta-Andria-Trani</option><option value="BL">Belluno</option><option value="BN">Benevento</option><option value="BG">Bergamo</option><option value="BI">Biella</option><option value="BO">Bologna</option><option value="BZ">Bolzano</option><option value="BS">Brescia</option><option value="BR">Brindisi</option><option value="CA">Cagliari</option><option value="CL">Caltanissetta</option><option value="CB">Campobasso</option><option value="CE">Caserta</option><option value="CT">Catania</option><option value="CZ">Catanzaro</option><option value="CH">Chieti</option><option value="CO">Como</option><option value="CS">Cosenza</option><option value="CR">Cremona</option><option value="KR">Crotone</option><option value="CN">Cuneo</option><option value="EN">Enna</option><option value="FM">Fermo</option><option value="FE">Ferrara</option><option value="FI">Firenze</option><option value="FG">Foggia</option><option value="FC">Forlì-Cesena</option><option value="FR">Frosinone</option><option value="GE">Genova</option><option value="GO">Gorizia</option><option value="GR">Grosseto</option><option value="IM">Imperia</option><option value="IS">Isernia</option><option value="SP">La Spezia</option><option value="AQ">L'Aquila</option><option value="LT">Latina</option><option value="LE">Lecce</option><option value="LC">Lecco</option><option value="LI">Livorno</option><option value="LO">Lodi</option><option value="LU">Lucca</option><option value="MC">Macerata</option><option value="MN">Mantova</option><option value="MS">Massa-Carrara</option><option value="MT">Matera</option><option value="ME">Messina</option><option value="MI">Milano</option><option value="MO">Modena</option><option value="MB">Monza e Brianza</option><option value="NA">Napoli</option><option value="NO">Novara</option><option value="NU">Nuoro</option><option value="OR">Oristano</option><option value="PD">Padova</option><option value="PA">Palermo</option><option value="PR">Parma</option><option value="PV">Pavia</option><option value="PG">Perugia</option><option value="PU">Pesaro e Urbino</option><option value="PE">Pescara</option><option value="PC">Piacenza</option><option value="PI">Pisa</option><option value="PT">Pistoia</option><option value="PN">Pordenone</option><option value="PZ">Potenza</option><option value="PO">Prato</option><option value="RG">Ragusa</option><option value="RA">Ravenna</option><option value="RC">Reggio Calabria</option><option value="RE">Reggio Emilia</option><option value="RI">Rieti</option><option value="RN">Rimini</option><option value="RM">Roma</option><option value="RO">Rovigo</option><option value="SA">Salerno</option><option value="SS">Sassari</option><option value="SV">Savona</option><option value="SI">Siena</option><option value="SR">Siracusa</option><option value="SO">Sondrio</option><option value="SU">Sud Sardegna</option><option value="TA">Taranto</option><option value="TE">Teramo</option><option value="TR">Terni</option><option value="TO">Torino</option><option value="TP">Trapani</option><option value="TN">Trento</option><option value="TV">Treviso</option><option value="TS">Trieste</option><option value="UD">Udine</option><option value="VA">Varese</option><option value="VE">Venezia</option><option value="VB">Verbano-Cusio-Ossola</option><option value="VC">Vercelli</option><option value="VR">Verona</option><option value="VV">Vibo Valentia</option><option value="VI">Vicenza</option><option value="VT">Viterbo</option>
+                    </select>
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-back" onclick="prevStep()">← Indietro</button>
+                    <button class="btn btn-next" onclick="nextStep()">Avanti →</button>
+                </div>
+            </div>
+            
+            <!-- STEP 6: Documento -->
+            <div class="step" data-step="6">
+                <div class="step-icon">📄</div>
+                <div class="step-title">Documento di identità</div>
+                <div class="step-subtitle">Inserisci i dati del tuo documento</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tipo Documento</label>
+                    <select id="tipoDocumento" class="form-select">
+                        <option value="">-- Seleziona --</option>
+                        <option value="Passaporto">Passaporto</option>
+                        <option value="Carta d'Identità">Carta d'Identità</option>
+                        <option value="Permesso di Soggiorno">Permesso di Soggiorno</option>
+                        <option value="Patente">Patente di Guida</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Numero Documento</label>
+                    <input type="text" id="numeroDocumento" class="form-input" placeholder="Numero" style="text-transform: uppercase;">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Data Rilascio</label>
+                        <input type="date" id="dataRilascio" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data Scadenza</label>
+                        <input type="date" id="dataScadenza" class="form-input">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Autorità di Rilascio</label>
+                    <input type="text" id="autoritaRilascio" class="form-input" placeholder="Es: Questura di Padova">
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-back" onclick="prevStep()">← Indietro</button>
+                    <button class="btn btn-next" onclick="nextStep()">Avanti →</button>
+                </div>
+                <div class="skip-link">
+                    <a href="#" onclick="nextStep(); return false;">Salta, non ho documenti ora →</a>
+                </div>
+            </div>
+            
+            <!-- STEP 7: Foto Documento -->
+            <div class="step" data-step="7">
+                <div class="step-icon">📷</div>
+                <div class="step-title">Foto del documento</div>
+                <div class="step-subtitle">Scatta o carica una foto del documento</div>
+                
+                <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                    <input type="file" id="fileInput" accept="image/*,.pdf" multiple style="display:none" onchange="handleFileSelect(this)">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">Tocca per scattare o caricare</div>
+                    <div class="upload-hint">Fronte e retro del documento</div>
+                </div>
+                <div class="file-preview" id="filePreview"></div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-back" onclick="prevStep()">← Indietro</button>
+                    <button class="btn btn-next" onclick="nextStep()">Avanti →</button>
+                </div>
+                <div class="skip-link">
+                    <a href="#" onclick="nextStep(); return false;">Salta, invierò dopo →</a>
+                </div>
+            </div>
+            
+            <!-- STEP 8: Firma Privacy GDPR -->
+            <div class="step" data-step="8">
+                <div class="step-icon">✍️</div>
+                <div class="step-title">Consenso Privacy</div>
+                <div class="step-subtitle">Leggi e firma per il trattamento dati</div>
+                
+                <div style="background: #f8fafc; border-radius: 12px; padding: 15px; margin-bottom: 15px; max-height: 150px; overflow-y: auto; font-size: 0.85rem; color: #475569; text-align: left;">
+                    <strong>INFORMATIVA PRIVACY (Art. 13 GDPR)</strong><br><br>
+                    Il sottoscritto dichiara di essere stato informato che i dati personali forniti saranno trattati per le finalità connesse alle pratiche richieste. Il trattamento sarà effettuato con strumenti informatici e/o cartacei. I dati potranno essere comunicati a enti pubblici per gli adempimenti di legge. L'interessato potrà esercitare i diritti di cui agli artt. 15-22 del GDPR.
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="consensoPrivacy" style="width: 24px; height: 24px; margin-top: 2px;">
+                        <span style="font-size: 0.95rem;">Dichiaro di aver letto l'informativa privacy e <strong>acconsento</strong> al trattamento dei miei dati personali.</span>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">✍️ Firma qui sotto:</label>
+                    <div style="position: relative;">
+                        <canvas id="firmaCanvas" width="400" height="150" style="border: 2px solid #cbd5e1; border-radius: 12px; background: white; width: 100%; touch-action: none;"></canvas>
+                        <button type="button" onclick="cancellaFirma()" style="position: absolute; top: 10px; right: 10px; background: #fee2e2; border: none; color: #dc2626; padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">🗑️ Cancella</button>
+                    </div>
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-back" onclick="prevStep()">← Indietro</button>
+                    <button class="btn btn-next" onclick="validaFirmaEAvanza()" style="background: linear-gradient(135deg, #059669, #047857);">Conferma →</button>
+                </div>
+            </div>
+            
+            <!-- STEP 9: Riepilogo e Invio -->
+            <div class="step" data-step="9">
+                <div class="step-icon">✅</div>
+                <div class="step-title">Tutto pronto!</div>
+                <div class="step-subtitle">Controlla i dati e invia</div>
+                
+                <div id="riepilogo" style="text-align: left; background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; max-height: 250px; overflow-y: auto;"></div>
+                
+                <div class="btn-container" style="flex-direction: column;">
+                    <button class="btn btn-submit" onclick="inviaWhatsApp()">📱 Invia su WhatsApp</button>
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-back" onclick="prevStep()">← Modifica</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SUCCESS -->
+        <div class="success-container" id="successContainer">
+            <div class="success-icon">🎉</div>
+            <div class="success-title">Dati Inviati!</div>
+            <div class="success-text">Riceverai presto una risposta.</div>
+            <button class="whatsapp-btn" onclick="inviaWhatsApp()">📱 Apri WhatsApp</button>
+            <button class="link-btn" onclick="location.reload()">🔄 Compila di nuovo</button>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ CAMBIA QUESTO CON IL TUO NUMERO WHATSAPP
+        const WHATSAPP_NUMBER = '393927672569';
+        
+        let currentStep = 1;
+        const totalSteps = 9;
+        let uploadedFiles = [];
+        let firmaData = null;
+        
+        function updateProgress() {
+            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Passo ${currentStep} di ${totalSteps}`;
+        }
+        
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
+            updateProgress();
+            if (step === 8) setTimeout(initFirmaCanvas, 100);
+            if (step === 9) generaRiepilogo();
+        }
+        
+        function nextStep() {
+            if (currentStep < totalSteps) { currentStep++; showStep(currentStep); }
+        }
+        
+        function prevStep() {
+            if (currentStep > 1) { currentStep--; showStep(currentStep); }
+        }
+        
+        function handleFileSelect(input) {
+            const files = input.files;
+            const previewContainer = document.getElementById('filePreview');
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (file.size > 10 * 1024 * 1024) { alert('File troppo grande. Max 10MB.'); continue; }
+                uploadedFiles.push(file);
+                const fileIndex = uploadedFiles.length - 1;
+                const wrapper = document.createElement('div');
+                wrapper.style.cssText = 'display:inline-block;margin:5px;';
+                wrapper.id = `fileWrapper_${fileIndex}`;
+                const previewItem = document.createElement('div');
+                previewItem.className = 'file-preview-item';
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = e => { previewItem.innerHTML = `<img src="${e.target.result}"><button type="button" class="remove-file" onclick="removeFile(${fileIndex})">✕</button>`; };
+                    reader.readAsDataURL(file);
+                } else {
+                    previewItem.innerHTML = `<div class="file-icon">📄</div><button type="button" class="remove-file" onclick="removeFile(${fileIndex})">✕</button>`;
+                }
+                wrapper.appendChild(previewItem);
+                previewContainer.appendChild(wrapper);
+            }
+            input.value = '';
+        }
+        
+        function removeFile(index) {
+            uploadedFiles[index] = null;
+            const wrapper = document.getElementById(`fileWrapper_${index}`);
+            if (wrapper) wrapper.remove();
+        }
+        
+        function getValue(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+        
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            try { return new Date(dateStr).toLocaleDateString('it-IT'); } catch(e) { return dateStr; }
+        }
+        
+        // Firma Canvas
+        let firmaCanvas, firmaCtx, isDrawing = false;
+        
+        function initFirmaCanvas() {
+            firmaCanvas = document.getElementById('firmaCanvas');
+            if (!firmaCanvas) return;
+            firmaCtx = firmaCanvas.getContext('2d');
+            const rect = firmaCanvas.getBoundingClientRect();
+            firmaCanvas.width = rect.width * 2;
+            firmaCanvas.height = rect.height * 2;
+            firmaCtx.scale(2, 2);
+            firmaCtx.strokeStyle = '#1e40af';
+            firmaCtx.lineWidth = 2;
+            firmaCtx.lineCap = 'round';
+            firmaCanvas.addEventListener('mousedown', e => { isDrawing = true; firmaCtx.beginPath(); firmaCtx.moveTo(e.clientX - firmaCanvas.getBoundingClientRect().left, e.clientY - firmaCanvas.getBoundingClientRect().top); });
+            firmaCanvas.addEventListener('mousemove', e => { if (!isDrawing) return; firmaCtx.lineTo(e.clientX - firmaCanvas.getBoundingClientRect().left, e.clientY - firmaCanvas.getBoundingClientRect().top); firmaCtx.stroke(); });
+            firmaCanvas.addEventListener('mouseup', () => isDrawing = false);
+            firmaCanvas.addEventListener('mouseout', () => isDrawing = false);
+            firmaCanvas.addEventListener('touchstart', e => { e.preventDefault(); isDrawing = true; const touch = e.touches[0]; const rect = firmaCanvas.getBoundingClientRect(); firmaCtx.beginPath(); firmaCtx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top); }, {passive: false});
+            firmaCanvas.addEventListener('touchmove', e => { e.preventDefault(); if (!isDrawing) return; const touch = e.touches[0]; const rect = firmaCanvas.getBoundingClientRect(); firmaCtx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top); firmaCtx.stroke(); }, {passive: false});
+            firmaCanvas.addEventListener('touchend', () => isDrawing = false);
+        }
+        
+        function cancellaFirma() { if (firmaCtx) firmaCtx.clearRect(0, 0, firmaCanvas.width, firmaCanvas.height); firmaData = null; }
+        
+        function isFirmaVuota() {
+            if (!firmaCanvas) return true;
+            const pixelData = firmaCtx.getImageData(0, 0, firmaCanvas.width, firmaCanvas.height).data;
+            for (let i = 3; i < pixelData.length; i += 4) { if (pixelData[i] > 0) return false; }
+            return true;
+        }
+        
+        function validaFirmaEAvanza() {
+            if (!document.getElementById('consensoPrivacy').checked) { alert('⚠️ Devi accettare l\'informativa privacy.'); return; }
+            if (isFirmaVuota()) { alert('⚠️ Per favore, firma nel riquadro.'); return; }
+            firmaData = firmaCanvas.toDataURL('image/png');
+            nextStep();
+        }
+        
+        function generaRiepilogo() {
+            const filesCount = uploadedFiles.filter(f => f !== null).length;
+            let html = `
+                <p><strong>👤 ${getValue('nome').toUpperCase()} ${getValue('cognome').toUpperCase()}</strong></p>
+                <p>📅 Nato il ${formatDate(getValue('dataNascita'))} a ${getValue('luogoNascita')}, ${getValue('paeseNascita')}</p>
+                <p>🌍 Cittadinanza: ${getValue('cittadinanza')}</p>
+                ${getValue('codiceFiscale') ? `<p>🔢 CF: ${getValue('codiceFiscale').toUpperCase()}</p>` : ''}
+                <hr style="margin: 10px 0; border: none; border-top: 1px solid #e2e8f0;">
+                <p>📞 ${getValue('telefono')}</p>
+                ${getValue('email') ? `<p>📧 ${getValue('email')}</p>` : ''}
+                ${getValue('indirizzo') ? `<p>🏠 ${getValue('indirizzo')}, ${getValue('citta')} (${getValue('provincia')})</p>` : ''}
+            `;
+            if (getValue('tipoDocumento')) {
+                html += `<hr style="margin: 10px 0; border: none; border-top: 1px solid #e2e8f0;"><p>📄 <strong>${getValue('tipoDocumento')}</strong> - ${getValue('numeroDocumento').toUpperCase()}</p><p>Scadenza: ${formatDate(getValue('dataScadenza'))}</p>`;
+            }
+            if (filesCount > 0) html += `<p>📎 <strong>${filesCount} foto allegate</strong></p>`;
+            html += `<hr style="margin: 10px 0; border: none; border-top: 1px solid #e2e8f0;"><p style="color: #059669;">✅ <strong>Consenso privacy firmato</strong></p>`;
+            document.getElementById('riepilogo').innerHTML = html;
+        }
+        
+        function generaTestoWhatsApp() {
+            const filesCount = uploadedFiles.filter(f => f !== null).length;
+            let testo = `📋 *NUOVA REGISTRAZIONE*
+
+👤 *ANAGRAFICA*
+Nome: ${getValue('nome').toUpperCase()} ${getValue('cognome').toUpperCase()}
+Nato: ${formatDate(getValue('dataNascita'))}
+Luogo: ${getValue('luogoNascita')}, ${getValue('paeseNascita')}
+Cittadinanza: ${getValue('cittadinanza')}
+${getValue('codiceFiscale') ? `CF: ${getValue('codiceFiscale').toUpperCase()}` : ''}
+
+📞 *CONTATTI*
+Tel: ${getValue('telefono')}
+${getValue('email') ? `Email: ${getValue('email')}` : ''}
+
+🏠 *RESIDENZA*
+${getValue('indirizzo') ? `${getValue('indirizzo')}, ${getValue('citta')} (${getValue('provincia')})` : 'Non specificata'}`;
+
+            if (getValue('tipoDocumento')) {
+                testo += `
+
+📄 *DOCUMENTO*
+Tipo: ${getValue('tipoDocumento')}
+Numero: ${getValue('numeroDocumento').toUpperCase()}
+Scadenza: ${formatDate(getValue('dataScadenza'))}
+Autorità: ${getValue('autoritaRilascio')}`;
+            }
+
+            if (filesCount > 0) testo += `
+
+📎 ${filesCount} foto da inviare separatamente`;
+
+            testo += `
+
+✅ *CONSENSO PRIVACY FIRMATO*
+Data: ${new Date().toLocaleString('it-IT')}`;
+
+            return testo;
+        }
+        
+        function inviaWhatsApp() {
+            const testo = generaTestoWhatsApp();
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(testo)}`, '_blank');
+            document.getElementById('stepContainer').style.display = 'none';
+            document.querySelector('.progress-container').style.display = 'none';
+            document.getElementById('successContainer').classList.add('show');
+        }
+        
+        updateProgress();
+    </script>
+</body>
+</html>
