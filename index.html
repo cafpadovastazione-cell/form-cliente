@@ -595,6 +595,9 @@
         // ⚠️ CAMBIA QUESTO CON IL TUO NUMERO WHATSAPP
         const WHATSAPP_NUMBER = '393927672569';
         
+        // Google Sheets URL
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw-kPmYOIwTjfmtH9FdX0vqfEximFsow-FA4GcsWwYmeXdGnzaYsx12vwU9Q6uhTj6Qqw/exec';
+        
         let currentStep = 1;
         const totalSteps = 9;
         let uploadedFiles = [];
@@ -761,6 +764,37 @@ Data: ${new Date().toLocaleString('it-IT')}`;
         }
         
         function inviaWhatsApp() {
+            // Prepara i dati per Google Sheets
+            const datiCliente = {
+                cognome: getValue('cognome').toUpperCase(),
+                nome: getValue('nome').toUpperCase(),
+                dataNascita: formatDate(getValue('dataNascita')),
+                luogoNascita: getValue('luogoNascita'),
+                paeseNascita: getValue('paeseNascita'),
+                cittadinanza: getValue('cittadinanza'),
+                codiceFiscale: getValue('codiceFiscale').toUpperCase(),
+                telefono: getValue('telefono'),
+                email: getValue('email'),
+                indirizzo: getValue('indirizzo'),
+                citta: getValue('citta'),
+                provincia: getValue('provincia'),
+                tipoDocumento: getValue('tipoDocumento'),
+                numeroDocumento: getValue('numeroDocumento').toUpperCase()
+            };
+            
+            // Invia a Google Sheets
+            fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datiCliente)
+            }).then(() => {
+                console.log('✅ Inviato a Google Sheets');
+            }).catch(err => {
+                console.log('Errore Google Sheets:', err);
+            });
+            
+            // Apri WhatsApp
             const testo = generaTestoWhatsApp();
             window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(testo)}`, '_blank');
             document.getElementById('stepContainer').style.display = 'none';
